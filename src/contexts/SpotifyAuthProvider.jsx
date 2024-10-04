@@ -36,23 +36,27 @@ export function SpotifyAuthProvider({children}){
 
 		// Empty dependency array means that this useEffect only runs on page load
 		// and never again
-	}, []);
+	}, []); // Empty - Only going to run when the page loads
 
 	useEffect(() => {
 
-		async function getAuthData(){
-			const authData = await getAuthTokens(clientId, userAuthCode);
-			setUserAuthData(authData);
-			// This cleans up the URL in the browser tab 
-			// removing the Spotify auth data so it doesn't impact the pageload useEffect
-			window.history.replaceState(null, "Spotify Statsboards", "/");
-		}
-		if (userAuthCode){
-			getAuthData();
-		}
+        async function getAuthData(){
+            const authData = await getAuthTokens(clientId, userAuthCode);
+            setUserAuthData(authData);
+            // This cleans up the URL in the browser tab 
+            // removing the Spotify auth data so it doesn't impact the pageload useEffect
+            // URL before replaceState:
+            // localhost:5173/spotifycallback?code=laksjcnalcknjaslfvjkhsadlfvksndvlsd,mn
+            window.history.replaceState(null, "Spotify Statsboards", "/");
+            // URL after replaceState:
+            // localhost:5173/
+        }
+        if (userAuthCode){
+            getAuthData();
+        }
 
-		// When userAuthCode changes or initialises, we'll try and run this useEffect
-	}, [userAuthCode]);
+        // When userAuthCode changes or initialises, we'll try and run this useEffect
+    }, [userAuthCode]);
 
 	async function getAuthTokens(clientId, code){
 		const verifier = localStorage.getItem("verifier");
