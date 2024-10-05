@@ -14,9 +14,11 @@ export function useSpotifyAuthContext(){
 	return useContext(SpotifyAuthContext);
 }
 
+// Client ID from app configured in Spotify developer dashboard
+// https://developer.spotify.com/dashboard
 const clientId = "c3c65881b6af4c929b3b8a206d38230f";
 
-export function SpotifyAuthProvider({children}){ // 
+export function SpotifyAuthProvider({children}){
 	// Code required for Spotify sign-in process, not usable in API requests
 	let [userAuthCode, setUserAuthCode] = useState("");
 	// User access tokens and refresh tokens - represents the current signed-in user 
@@ -36,27 +38,27 @@ export function SpotifyAuthProvider({children}){ //
 
 		// Empty dependency array means that this useEffect only runs on page load
 		// and never again
-	}, []); // Empty - Only going to run when the page loads
+	}, []);
 
 	useEffect(() => {
 
-        async function getAuthData(){
-            const authData = await getAuthTokens(clientId, userAuthCode);
-            setUserAuthData(authData);
-            // This cleans up the URL in the browser tab 
-            // removing the Spotify auth data so it doesn't impact the pageload useEffect
-            // URL before replaceState:
-            // localhost:5173/spotifycallback?code=laksjcnalcknjaslfvjkhsadlfvksndvlsd,mn
-            window.history.replaceState(null, "Spotify Statsboards", "/");
-            // URL after replaceState:
-            // localhost:5173/
-        }
-        if (userAuthCode){
-            getAuthData();
-        }
+		async function getAuthData(){
+			const authData = await getAuthTokens(clientId, userAuthCode);
+			setUserAuthData(authData);
+			// This cleans up the URL in the browser tab 
+			// removing the Spotify auth data so it doesn't impact the pageload useEffect
+			// URL before replaceState:
+			// localhost:5173/spotifycallback?code=laksjcnalcknjaslfvjkhsadlfvksndvlsd,mn
+			window.history.replaceState(null, "Spotify Statsboards", "/");
+			// URL after replaceState:
+			// localhost:5173/
+		}
+		if (userAuthCode){
+			getAuthData();
+		}
 
-        // When userAuthCode changes or initialises, we'll try and run this useEffect
-    }, [userAuthCode]);
+		// When userAuthCode changes or initialises, we'll try and run this useEffect
+	}, [userAuthCode]);
 
 	async function getAuthTokens(clientId, code){
 		const verifier = localStorage.getItem("verifier");
@@ -121,6 +123,15 @@ export function SpotifyAuthProvider({children}){ //
 			.replace(/\//g, '_')
 			.replace(/=+$/, '');
 	}
+
+
+
+
+
+
+
+
+
 
 
 	return(
