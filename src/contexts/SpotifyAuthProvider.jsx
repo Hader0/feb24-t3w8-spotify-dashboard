@@ -16,7 +16,7 @@ export function useSpotifyAuthContext(){
 
 const clientId = "c3c65881b6af4c929b3b8a206d38230f";
 
-export function SpotifyAuthProvider({children}){
+export function SpotifyAuthProvider({children}){ // 
 	// Code required for Spotify sign-in process, not usable in API requests
 	let [userAuthCode, setUserAuthCode] = useState("");
 	// User access tokens and refresh tokens - represents the current signed-in user 
@@ -121,15 +121,6 @@ export function SpotifyAuthProvider({children}){
 			.replace(/\//g, '_')
 			.replace(/=+$/, '');
 	}
-
-
-
-
-
-
-
-
-
 
 
 	return(

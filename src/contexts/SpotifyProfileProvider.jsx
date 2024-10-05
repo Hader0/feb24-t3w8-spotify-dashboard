@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { ModuleCacheMap } from "vite/runtime"
+import { useSpotifyAuthContext } from "./SpotifyAuthProvider";
 
 
 export const defaultProfileData = {
@@ -24,9 +25,38 @@ export function useSpotifyProfileData() {
 }
 
 export function SpotifyProfileProvider({children}) {
+
+    let [profileData, setProfileData] = useState(defaultProfileData);
     
+    // Access auth data from AuthProvider so that we can make more fetch requests
+    let {userAuthData} = useSpotifyAuthContext();
+
+    async function fetchProfileData(accessToken){
+        const result = await fetch(
+            "https://api.spotify.com/v1/me",
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+        );
+        return await result.json();
+    }
+
+    useEffect(() => {
+        // If auth data has an access token, start making fetch requests, then setState
+        if (userAuthData && userAuthData.access_token) {
+            fetchProfileData(userAuthData.access_token).then(profileData => {
+                setProfileData(profileData);
+            })
+        }
+
+        // Whenever auth data changes, check it and maybe make fetch requests
+    }, [userAuthData]);
+
     return (
-        <SpotifyProfileContext.Provider>
+        <SpotifyProfileContext.Provider value={profileData}>
             {children}
         </SpotifyProfileContext.Provider>
     )
