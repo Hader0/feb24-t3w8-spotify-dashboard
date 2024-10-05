@@ -27,6 +27,7 @@ export function useSpotifyProfileData() {
 export function SpotifyProfileProvider({children}) {
 
     let [profileData, setProfileData] = useState(defaultProfileData);
+    let [topTracks, setTopTracks] = useState({});
     
     // Access auth data from AuthProvider so that we can make more fetch requests
     let {userAuthData} = useSpotifyAuthContext();
@@ -41,6 +42,21 @@ export function SpotifyProfileProvider({children}) {
                 }
             }
         );
+
+        return await result.json();
+    }
+
+    async function fetchTopTracks(accessToken){
+        const result = await fetch(
+            "https://api.spotify.com/v1/me/top/tracks",
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+        );
+        
         return await result.json();
     }
 
@@ -49,6 +65,9 @@ export function SpotifyProfileProvider({children}) {
         if (userAuthData && userAuthData.access_token) {
             fetchProfileData(userAuthData.access_token).then(profileData => {
                 setProfileData(profileData);
+            });
+            fetchTopTracks(userAuthData.access_token).then(result => {
+                setTopTracks(result);
             })
         }
 
@@ -56,7 +75,7 @@ export function SpotifyProfileProvider({children}) {
     }, [userAuthData]);
 
     return (
-        <SpotifyProfileContext.Provider value={profileData}>
+        <SpotifyProfileContext.Provider value={{profileData, topTracks}}>
             {children}
         </SpotifyProfileContext.Provider>
     )
